@@ -1,15 +1,15 @@
-name: CI
+name: Speed Test CI
 
 on:
+  schedule:
+    - cron: '0 * * * *'  # This runs the workflow every hour
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  build:
+  speed-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,13 @@ jobs:
         source venv/bin/activate
         pip install -r requirements.txt
 
-    - name: Run tests
+    - name: Run speed test
       run: |
         source venv/bin/activate
-        pytest
+        python main.py
+
+    - name: Upload log file
+      uses: actions/upload-artifact@v3
+      with:
+        name: speedtest-log
+        path: data/logs/speedtest.log
