@@ -1,3 +1,4 @@
 speedtest-cli
 tk
 pytest
+matplotlib
