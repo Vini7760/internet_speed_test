@@ -1,0 +1,102 @@
+# name: Speed Test CI
+
+# on:
+#   schedule:
+#     - cron: '0 * * * *'  # This runs the workflow every hour
+#   push:
+#     branches:
+#       - main
+#   workflow_dispatch:
+
+# jobs:
+#   speed-test:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v3
+
+#     - name: Set up Python
+#       uses: actions/setup-python@v4
+#       with:
+#         python-version: '3.x'
+
+#     - name: Install dependencies
+#       run: |
+#         python -m venv venv
+#         source venv/bin/activate
+#         pip install -r requirements.txt
+
+#     - name: Run speed test
+#       run: |
+#         source venv/bin/activate
+#         python main.py
+
+#     - name: Upload log file
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: speedtest-log
+#         path: data/logs/speedtest.log
+
+#     - name: Build and Push Docker Image
+#       uses: mr-smithers-excellent/docker-build-push@v4
+#       with:
+#         image: pallakki/speedtest
+#         registry: docker.io
+#         username: ${{ secrets.DOCKER_USERNAME }}
+#         password: ${{ secrets.DOCKER_PASSWORD }}
+
+name: Speed Test CI
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # This runs the workflow every hour
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  speed-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Run speed test
+      run: |
+        source venv/bin/activate
+        python main.py
+
+    - name: Upload log file
+      uses: actions/upload-artifact@v3
+      with:
+        name: speedtest-log
+        path: data/logs/speedtest.log
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+    - name: Configure Docker to use gcloud as a credential helper
+      run: |
+        gcloud auth configure-docker
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/speedtest:latest .
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/speedtest:latest
+
