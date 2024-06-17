@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: speedtest
-        image: gcr.io/secrets.GCP_PROJECT_ID/speedtest:latest
+        image: gcr.io/qwiklabs-gcp-03-5186302bd920/speedtest:latest
         ports:
         - containerPort: 80
