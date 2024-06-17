@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speedtest-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: speedtest
+  template:
+    metadata:
+      labels:
+        app: speedtest
+    spec:
+      containers:
+      - name: speedtest
+        image: gcr.io/YOUR_PROJECT_ID/speedtest:latest
+        ports:
+        - containerPort: 80
