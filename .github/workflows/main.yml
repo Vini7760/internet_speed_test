@@ -110,6 +110,76 @@
 #         kubectl apply -f k8s-deployment.yaml
 
 
+# name: Speed Test CI
+
+# on:
+#   schedule:
+#     - cron: '0 * * * *'  # This runs the workflow every hour
+#   push:
+#     branches:
+#       - main
+#   workflow_dispatch:
+
+# jobs:
+#   speed-test:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v3
+
+#     - name: Set up Python
+#       uses: actions/setup-python@v4
+#       with:
+#         python-version: '3.x'
+
+#     - name: Install dependencies
+#       run: |
+#         python -m venv venv
+#         source venv/bin/activate
+#         pip install -r requirements.txt
+
+#     - name: Run speed test
+#       run: |
+#         source venv/bin/activate
+#         python main.py
+
+#     - name: Upload log file
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: speedtest-log
+#         path: data/logs/speedtest.log
+
+#     - name: Authenticate to Google Cloud
+#       uses: google-github-actions/auth@v1
+#       with:
+#         credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+#     - name: Configure Docker to use gcloud as a credential helper
+#       run: |
+#         gcloud auth configure-docker
+
+#     - name: Build and Push Docker Image
+#       run: |
+#         docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/speedtest:latest .
+#         docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/speedtest:latest
+
+#     - name: Get GKE credentials
+#       run: |
+#         gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} --zone ${{ secrets.GKE_CLUSTER_ZONE }} --project ${{ secrets.GCP_PROJECT_ID }}
+
+#     - name: Install kubectl
+#       run: |
+#         sudo apt-get update && sudo apt-get install -y kubectl
+
+#     - name: Install gke-gcloud-auth-plugin
+#       run: |
+#         gcloud components install gke-gcloud-auth-plugin --quiet
+
+#     - name: Deploy to GKE
+#       run: |
+#         kubectl apply -f k8s-deployment.yaml
+
 name: Speed Test CI
 
 on:
@@ -174,10 +244,11 @@ jobs:
 
     - name: Install gke-gcloud-auth-plugin
       run: |
-        gcloud components install gke-gcloud-auth-plugin --quiet
+        sudo apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin
 
     - name: Deploy to GKE
       run: |
         kubectl apply -f k8s-deployment.yaml
+
 
 
