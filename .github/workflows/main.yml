@@ -45,7 +45,8 @@
 #         registry: docker.io
 #         username: ${{ secrets.DOCKER_USERNAME }}
 #         password: ${{ secrets.DOCKER_PASSWORD }}
-
+# the above code is to deploy to dcoker
+#the below code is to deploy to Gcloud
 name: Speed Test CI
 
 on:
