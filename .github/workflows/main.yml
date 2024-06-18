@@ -253,8 +253,8 @@
 name: Speed Test CI
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # This runs the workflow every hour
+  # schedule:
+  #   - cron: '0 * * * *'  # This runs the workflow every hour
   push:
     branches:
       - main
